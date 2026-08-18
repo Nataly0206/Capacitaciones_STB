@@ -323,12 +323,8 @@ class CapacitacionModuloController extends Controller
         $this->guardarSeccionesModulo($request, $modulo);
 
         return redirect()
-            ->route('capacitacion_modulos.edit', [
-                'id' => $modulo->id_capacitacion_modulo,
-                'origen' => 'builder',
-            ])
-            ->with('success', 'El módulo fue actualizado correctamente.')
-            ->with('modulo_actualizado', true);
+            ->route('capacitaciones.builder', $modulo->id_capacitacion)
+            ->with('success', 'El módulo fue actualizado correctamente.');
     }
 
     public function toggleEstado($id)

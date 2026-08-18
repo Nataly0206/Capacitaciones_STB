@@ -20,6 +20,12 @@
             <div class="esf-page-card esf-module-editor-card overflow-hidden">
                 <div class="p-6 sm:p-8 text-slate-900 dark:text-slate-100">
 
+                    @if (session('success'))
+                        <div class="mb-6 esf-alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     @if ($errors->any())
                         <div class="mb-6 esf-alert-error">
                             <strong>Revisa los siguientes campos:</strong>
@@ -463,19 +469,15 @@
                             </div>
                         </div>
 
-                        @php
-                            $moduloFueActualizado = session('modulo_actualizado');
-                        @endphp
-
                         <div class="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-slate-200/80 dark:border-slate-700/80 pt-5">
                             <p class="text-xs text-slate-400 dark:text-slate-500">
-                                {{ $moduloFueActualizado ? 'Los cambios ya fueron guardados. Puedes volver al constructor del módulo.' : 'Guarda los cambios para actualizar la estructura del módulo.' }}
+                                Guarda los cambios para actualizar la estructura del módulo.
                             </p>
 
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <a href="{{ route('capacitaciones.builder', $modulo->id_capacitacion) }}"
                                 class="esf-btn esf-btn-soft">
-                                    {{ $moduloFueActualizado ? 'Volver' : 'Cancelar' }}
+                                    Cancelar
                                 </a>
 
                                 <button type="submit" class="esf-btn esf-btn-primary">
@@ -1116,6 +1118,63 @@
             });
         }
 
+        // El botón de imagen de la barra de herramientas ya sube el archivo al
+        // servidor (subirImagenTeoriaModulo). Pero al pegar una captura de
+        // pantalla o arrastrar un archivo de imagen dentro del editor, Quill
+        // por defecto la incrusta como base64 directamente en el contenido, lo
+        // que infla el HTML a decenas de miles de caracteres y revienta el
+        // límite de 100000 caracteres de secciones_contenido. Estas dos
+        // funciones interceptan esos dos caminos y las suben igual que el botón.
+        function subirBlobImagenTeoriaModulo(blob, quill, indice) {
+            const formData = new FormData();
+            formData.append('imagen', blob, 'imagen.png');
+
+            fetch(urlSubidaImagenTeoriaModulo, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': tokenCsrfTeoriaModulo,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.url) {
+                    mostrarAvisoEditorModulo(quill, 'No se pudo subir la imagen.');
+                    return;
+                }
+
+                quill.insertEmbed(indice, 'image', data.url, 'user');
+                quill.setSelection(indice + 1);
+            })
+            .catch(() => {
+                mostrarAvisoEditorModulo(quill, 'Ocurrió un error al subir la imagen.');
+            });
+        }
+
+        function interceptarImagenBase64TeoriaModulo(node, quill) {
+            const src = node && node.getAttribute ? node.getAttribute('src') : null;
+
+            if (!src || src.indexOf('data:') !== 0) {
+                return null;
+            }
+
+            const rango = quill.getSelection(true);
+            const indice = rango ? rango.index : quill.getLength();
+
+            fetch(src)
+                .then(function (respuesta) { return respuesta.blob(); })
+                .then(function (blob) {
+                    subirBlobImagenTeoriaModulo(blob, quill, indice);
+                })
+                .catch(function () {
+                    mostrarAvisoEditorModulo(quill, 'Ocurrió un error al procesar la imagen pegada.');
+                });
+
+            const Delta = Quill.import('delta');
+            return new Delta();
+        }
+
         function seleccionarImagenTeoriaModulo(quill) {
             const input = document.createElement('input');
             input.setAttribute('type', 'file');
@@ -1555,12 +1614,31 @@
                 }, 100);
             });
 
-            quill.root.addEventListener('drop', function () {
+            quill.clipboard.addMatcher('img', function (node, delta) {
+                const deltaSinBase64 = interceptarImagenBase64TeoriaModulo(node, quill);
+                return deltaSinBase64 || delta;
+            });
+
+            quill.root.addEventListener('drop', function (event) {
+                if (!event.dataTransfer || !event.dataTransfer.files || !event.dataTransfer.files.length) {
+                    return;
+                }
+
+                const archivo = Array.from(event.dataTransfer.files).find(function (item) {
+                    return item.type && item.type.indexOf('image/') === 0;
+                });
+
+                if (!archivo) {
+                    return;
+                }
+
+                event.preventDefault();
                 marcarContenidoSeccionModuloTocado(editor);
 
-                setTimeout(function () {
-                    sincronizarEditorSeccionModulo(editor);
-                }, 100);
+                const rango = quill.getSelection(true);
+                const indice = rango ? rango.index : quill.getLength();
+
+                subirBlobImagenTeoriaModulo(archivo, quill, indice);
             });
 
             const toolbar = quill.getModule('toolbar');
