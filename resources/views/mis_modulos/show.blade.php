@@ -677,13 +677,17 @@
                                                         $esAudioRecurso = in_array($extensionRecurso, ['mp3', 'wav', 'ogg', 'm4a'], true);
                                                         $esOfficeRecurso = in_array($extensionRecurso, ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'], true);
 
-                                                        $urlEsLocal = $rutaArchivoRecurso
-                                                            ? (str_contains($rutaArchivoRecurso, '127.0.0.1') || str_contains($rutaArchivoRecurso, 'localhost'))
-                                                            : true;
+                                                        $urlEsLocal = !\App\Support\VistaPreviaRecurso::esUrlAccesibleDesdeInternet($rutaArchivoRecurso);
 
                                                         $urlOfficeViewer = $rutaArchivoRecurso
                                                             ? 'https://view.officeapps.live.com/op/embed.aspx?src=' . urlencode($rutaArchivoRecurso)
                                                             : null;
+
+                                                        $extensionUrlRecurso = $dataItem->url_recurso
+                                                            ? strtolower(pathinfo(parse_url($dataItem->url_recurso, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION))
+                                                            : null;
+
+                                                        $esImagenUrlRecurso = in_array($extensionUrlRecurso, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'], true);
                                                     @endphp
 
                                                     <div id="{{ $idContenidoItem }}"
@@ -753,6 +757,13 @@
                                                                     </div>
                                                                 @endif
 
+                                                                @if($dataItem->url_recurso && $esImagenUrlRecurso)
+                                                                    <div class="esf-resource-preview">
+                                                                        <img src="{{ $dataItem->url_recurso }}"
+                                                                            alt="{{ $dataItem->titulo }}">
+                                                                    </div>
+                                                                @endif
+
                                                                 @if($dataItem->url_recurso)
                                                                     <a href="{{ $dataItem->url_recurso }}"
                                                                     target="_blank"
@@ -760,7 +771,7 @@
                                                                     data-tipo-contenido="recurso"
                                                                     data-id-contenido="{{ $dataItem->id_capacitacion_recurso }}"
                                                                     class="mt-4 esf-learning-big-action esf-learning-action-blue">
-                                                                        Abrir enlace
+                                                                        {{ $esImagenUrlRecurso ? 'Abrir imagen' : 'Abrir enlace' }}
                                                                     </a>
                                                                 @endif
                                                             </div>

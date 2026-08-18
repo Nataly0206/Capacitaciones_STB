@@ -672,13 +672,17 @@
                                                                                             $esAudioPreview = in_array($extensionPreview, ['mp3', 'wav', 'ogg', 'm4a'], true);
                                                                                             $esOfficePreview = in_array($extensionPreview, ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'], true);
 
-                                                                                            $urlEsLocalPreview = $rutaArchivoPreview
-                                                                                                ? (str_contains($rutaArchivoPreview, '127.0.0.1') || str_contains($rutaArchivoPreview, 'localhost'))
-                                                                                                : true;
+                                                                                            $urlEsLocalPreview = !\App\Support\VistaPreviaRecurso::esUrlAccesibleDesdeInternet($rutaArchivoPreview);
 
                                                                                             $urlOfficePreview = $rutaArchivoPreview
                                                                                                 ? 'https://view.officeapps.live.com/op/embed.aspx?src=' . urlencode($rutaArchivoPreview)
                                                                                                 : null;
+
+                                                                                            $extensionUrlPreview = $dataPreview->url_recurso
+                                                                                                ? strtolower(pathinfo(parse_url($dataPreview->url_recurso, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION))
+                                                                                                : null;
+
+                                                                                            $esImagenUrlPreview = in_array($extensionUrlPreview, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'], true);
                                                                                         @endphp
 
                                                                                         <div id="preview-builder-recurso-{{ $dataPreview->id_capacitacion_recurso }}"
@@ -740,11 +744,18 @@
                                                                                                         </div>
                                                                                                     @endif
 
+                                                                                                    @if($dataPreview->url_recurso && $esImagenUrlPreview)
+                                                                                                        <div class="esf-resource-preview">
+                                                                                                            <img src="{{ $dataPreview->url_recurso }}"
+                                                                                                                alt="{{ $dataPreview->titulo }}">
+                                                                                                        </div>
+                                                                                                    @endif
+
                                                                                                     @if($dataPreview->url_recurso)
                                                                                                         <a href="{{ $dataPreview->url_recurso }}"
                                                                                                         target="_blank"
                                                                                                         class="mt-4 esf-learning-big-action esf-learning-action-blue">
-                                                                                                            Abrir enlace
+                                                                                                            {{ $esImagenUrlPreview ? 'Abrir imagen' : 'Abrir enlace' }}
                                                                                                         </a>
                                                                                                     @endif
                                                                                                 </div>

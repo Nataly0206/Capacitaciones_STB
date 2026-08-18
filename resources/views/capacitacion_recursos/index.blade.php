@@ -240,13 +240,17 @@
                         $esAudioRecurso = in_array($extension, ['mp3', 'wav', 'ogg', 'm4a'], true);
                         $esOfficeRecurso = in_array($extension, ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'], true);
 
-                        $urlEsLocalRecurso = $urlArchivo
-                            ? (str_contains($urlArchivo, '127.0.0.1') || str_contains($urlArchivo, 'localhost'))
-                            : true;
+                        $urlEsLocalRecurso = !\App\Support\VistaPreviaRecurso::esUrlAccesibleDesdeInternet($urlArchivo);
 
                         $urlOfficeViewerRecurso = $urlArchivo
                             ? 'https://view.officeapps.live.com/op/embed.aspx?src=' . urlencode($urlArchivo)
                             : null;
+
+                        $extensionUrlRecurso = $recurso->url_recurso
+                            ? strtolower(pathinfo(parse_url($recurso->url_recurso, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION))
+                            : null;
+
+                        $esImagenUrlRecurso = in_array($extensionUrlRecurso, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'], true);
                     @endphp
 
                     <details id="recurso-{{ $recurso->id_capacitacion_recurso }}"
@@ -393,7 +397,11 @@
                                         </div>
                                     @elseif($recurso->url_recurso)
                                         <div class="esf-resource-preview">
-                                            <iframe src="{{ $recurso->url_recurso }}"></iframe>
+                                            @if($esImagenUrlRecurso)
+                                                <img src="{{ $recurso->url_recurso }}" alt="{{ $nombreVisibleRecurso }}">
+                                            @else
+                                                <iframe src="{{ $recurso->url_recurso }}"></iframe>
+                                            @endif
                                         </div>
 
                                         <div class="mt-3 flex flex-wrap gap-2">
@@ -568,7 +576,7 @@
         </div>
     </div>
 
-    <script>
+    <script nonce="{{ request()->attributes->get('csp_nonce') }}">
         document.addEventListener('DOMContentLoaded', function () {
                 const detalleAbierto = new URLSearchParams(window.location.search).get('open');
 
@@ -598,7 +606,7 @@
         });
     </script>
 
-    <script>
+    <script nonce="{{ request()->attributes->get('csp_nonce') }}">
     function abrirModal(id) {
         const modal = document.getElementById(id);
 
@@ -621,10 +629,5 @@
         modal.classList.remove('flex');
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        @if((int) request('crear') === 1)
-            abrirModal('modalCrearRecurso');
-        @endif
-    });
-</script>
+    </script>
 </x-app-layout>
