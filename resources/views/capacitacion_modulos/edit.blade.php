@@ -1152,6 +1152,25 @@
             });
         }
 
+        // La política de seguridad del sitio (connect-src 'self') bloquea que
+        // fetch() cargue URLs data:, así que la conversión de base64 a Blob se
+        // hace a mano con atob() en vez de fetch(src).blob() — eso no depende
+        // de red y no choca con esa política.
+        function dataUrlABlobTeoriaModulo(dataUrl) {
+            const partes = dataUrl.split(',');
+            const encabezado = partes[0] || '';
+            const coincidenciaMime = /:(.*?);/.exec(encabezado);
+            const mime = coincidenciaMime ? coincidenciaMime[1] : 'image/png';
+            const binario = atob(partes[1] || '');
+            const bytes = new Uint8Array(binario.length);
+
+            for (let i = 0; i < binario.length; i++) {
+                bytes[i] = binario.charCodeAt(i);
+            }
+
+            return new Blob([bytes], { type: mime });
+        }
+
         function interceptarImagenBase64TeoriaModulo(node, quill) {
             const src = node && node.getAttribute ? node.getAttribute('src') : null;
 
@@ -1162,14 +1181,12 @@
             const rango = quill.getSelection(true);
             const indice = rango ? rango.index : quill.getLength();
 
-            fetch(src)
-                .then(function (respuesta) { return respuesta.blob(); })
-                .then(function (blob) {
-                    subirBlobImagenTeoriaModulo(blob, quill, indice);
-                })
-                .catch(function () {
-                    mostrarAvisoEditorModulo(quill, 'Ocurrió un error al procesar la imagen pegada.');
-                });
+            try {
+                const blob = dataUrlABlobTeoriaModulo(src);
+                subirBlobImagenTeoriaModulo(blob, quill, indice);
+            } catch (error) {
+                mostrarAvisoEditorModulo(quill, 'Ocurrió un error al procesar la imagen pegada.');
+            }
 
             const Delta = Quill.import('delta');
             return new Delta();
