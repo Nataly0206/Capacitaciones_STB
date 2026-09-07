@@ -74,7 +74,7 @@ class CapacitacionRecursoController extends Controller
             'archivo_recurso' => [
                 'nullable',
                 'file',
-                'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,jpg,jpeg,png,gif,webp,mp4,mov,avi,webm,mp3,wav,zip,rar',
+                'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,jpg,jpeg,png,gif,webp,bmp,mp4,mov,avi,webm,m4v,mp3,wav,ogg,m4a,zip,rar',
                 'max:204800',
             ],
             'obligatorio' => ['required', 'in:0,1'],
@@ -83,6 +83,7 @@ class CapacitacionRecursoController extends Controller
             'contenido_texto' => ['nullable', 'string'],
             'permite_descarga' => ['required', 'in:0,1'],
         ], [
+            'archivo_recurso.uploaded' => 'No se pudo cargar el recurso. Verifica que el archivo no supere los 200 MB e inténtalo nuevamente.',
             'archivo_recurso.file' => 'El recurso debe ser un archivo válido.',
             'archivo_recurso.max' => 'El archivo no puede superar los 200 MB.',
             'archivo_recurso.mimes' => 'El archivo debe ser un documento, imagen, video, audio o archivo comprimido válido.',
@@ -181,7 +182,7 @@ class CapacitacionRecursoController extends Controller
             'archivo_recurso' => [
                 'nullable',
                 'file',
-                'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,jpg,jpeg,png,gif,webp,mp4,mov,avi,webm,mp3,wav,zip,rar',
+                'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,jpg,jpeg,png,gif,webp,bmp,mp4,mov,avi,webm,m4v,mp3,wav,ogg,m4a,zip,rar',
                 'max:204800',
             ],
             'obligatorio' => ['required', 'in:0,1'],
@@ -190,6 +191,7 @@ class CapacitacionRecursoController extends Controller
             'contenido_texto' => ['nullable', 'string'],
             'permite_descarga' => ['required', 'in:0,1'],
         ], [
+            'archivo_recurso.uploaded' => 'No se pudo cargar el recurso. Verifica que el archivo no supere los 200 MB e inténtalo nuevamente.',
             'archivo_recurso.file' => 'El recurso debe ser un archivo válido.',
             'archivo_recurso.max' => 'El archivo no puede superar los 200 MB.',
             'archivo_recurso.mimes' => 'El archivo debe ser un documento, imagen, video, audio o archivo comprimido válido.',

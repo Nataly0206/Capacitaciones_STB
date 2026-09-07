@@ -711,10 +711,12 @@
                                                                                                                 <img src="{{ $rutaArchivoPreview }}"
                                                                                                                     alt="{{ $dataPreview->titulo }}">
                                                                                                             @elseif($esPdfPreview)
-                                                                                                                <iframe src="{{ $rutaArchivoPreview }}"></iframe>
+                                                                                                                <iframe src="{{ $rutaArchivoPreview }}#toolbar=1&navpanes=0"
+                                                                                                                    title="Vista previa de {{ $dataPreview->titulo ?: 'recurso PDF' }}"></iframe>
                                                                                                             @elseif($esVideoPreview)
-                                                                                                                <video controls>
+                                                                                                                <video controls preload="metadata" playsinline>
                                                                                                                     <source src="{{ $rutaArchivoPreview }}">
+                                                                                                                    Tu navegador no puede reproducir este video. Puedes abrirlo o descargarlo desde el botón inferior.
                                                                                                                 </video>
                                                                                                             @elseif($esAudioPreview)
                                                                                                                 <div class="p-5">
@@ -742,6 +744,14 @@
                                                                                                                 </div>
                                                                                                             @endif
                                                                                                         </div>
+
+                                                                                                        @if((int) $dataPreview->permite_descarga === 1)
+                                                                                                            <a href="{{ $rutaArchivoPreview }}"
+                                                                                                                download
+                                                                                                                class="mt-4 esf-learning-big-action esf-learning-action-blue">
+                                                                                                                Descargar recurso
+                                                                                                            </a>
+                                                                                                        @endif
                                                                                                     @endif
 
                                                                                                     @if($dataPreview->url_recurso && $esImagenUrlPreview)

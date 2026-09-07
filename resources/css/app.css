@@ -4282,6 +4282,11 @@
         transition: background-color 160ms ease, transform 160ms ease, border-color 160ms ease !important;
     }
 
+    .esf-shell main .empleado-item[hidden],
+    .esf-shell main #sin-coincidencias-empleados[hidden] {
+        display: none !important;
+    }
+
     .esf-shell main .empleado-item:hover {
         background: rgba(239, 246, 255, 0.88) !important;
         border-color: rgba(147, 197, 253, 0.9) !important;

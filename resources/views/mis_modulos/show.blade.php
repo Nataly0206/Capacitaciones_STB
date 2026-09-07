@@ -721,10 +721,12 @@
                                                                             <img src="{{ $rutaArchivoRecurso }}"
                                                                                 alt="{{ $dataItem->titulo }}">
                                                                         @elseif($esPdfRecurso)
-                                                                            <iframe src="{{ $rutaArchivoRecurso }}"></iframe>
+                                                                            <iframe src="{{ $rutaArchivoRecurso }}#toolbar=1&navpanes=0"
+                                                                                title="Vista previa de {{ $dataItem->titulo ?: 'recurso PDF' }}"></iframe>
                                                                         @elseif($esVideoRecurso)
-                                                                            <video controls>
+                                                                            <video controls preload="metadata" playsinline>
                                                                                 <source src="{{ $rutaArchivoRecurso }}">
+                                                                                Tu navegador no puede reproducir este video. Puedes descargarlo desde el botón inferior.
                                                                             </video>
                                                                         @elseif($esAudioRecurso)
                                                                             <div class="p-5">
@@ -755,6 +757,17 @@
                                                                             </div>
                                                                         @endif
                                                                     </div>
+
+                                                                    @if((int) $dataItem->permite_descarga === 1)
+                                                                        <a href="{{ $rutaArchivoRecurso }}"
+                                                                        download
+                                                                        data-marcar-recurso="1"
+                                                                        data-tipo-contenido="recurso"
+                                                                        data-id-contenido="{{ $dataItem->id_capacitacion_recurso }}"
+                                                                        class="mt-4 esf-learning-big-action esf-learning-action-blue">
+                                                                            Descargar recurso
+                                                                        </a>
+                                                                    @endif
                                                                 @endif
 
                                                                 @if($dataItem->url_recurso && $esImagenUrlRecurso)

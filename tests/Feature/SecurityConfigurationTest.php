@@ -25,6 +25,20 @@ class SecurityConfigurationTest extends TestCase
             ->assertHeader('Content-Security-Policy');
     }
 
+    public function test_csp_permite_previsualizar_recursos_del_mismo_sitio(): void
+    {
+        $request = Request::create('http://localhost/capacitaciones');
+        $response = app(SecurityHeaders::class)->handle(
+            $request,
+            fn () => new Response('ok')
+        );
+
+        $this->assertStringContainsString(
+            "frame-src 'self' https:",
+            (string) $response->headers->get('Content-Security-Policy')
+        );
+    }
+
     public function test_csp_de_produccion_no_permite_evaluacion_dinamica(): void
     {
         $entornoAnterior = app()->environment();

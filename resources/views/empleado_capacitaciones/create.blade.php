@@ -129,6 +129,12 @@
                                     @empty
                                         <p class="text-gray-600">No hay empleados activos disponibles.</p>
                                     @endforelse
+
+                                    <p id="sin-coincidencias-empleados"
+                                        class="px-3 py-5 text-center text-sm font-medium text-gray-600"
+                                        hidden>
+                                        No se encontraron empleados con ese nombre o código.
+                                    </p>
                                 </div>
 
                                 @error('id_empleados') <p class="text-red-500 text-sm mt-2">{{ $message }}</p> @enderror
@@ -152,44 +158,4 @@
         </div>
     </div>
 
-    <script nonce="{{ request()->attributes->get('csp_nonce') }}">
-        document.addEventListener('DOMContentLoaded', function () {
-            const filtro = document.getElementById('filtro-empleados');
-            const items = document.querySelectorAll('.empleado-item');
-            const botonSeleccionarVisibles = document.getElementById('seleccionar-visibles');
-            const botonLimpiarSeleccion = document.getElementById('limpiar-seleccion');
-
-            if (filtro) {
-                filtro.addEventListener('input', function () {
-                    const valor = this.value.toLowerCase().trim();
-
-                    items.forEach(function (item) {
-                        const texto = item.dataset.texto || '';
-                        item.style.display = texto.includes(valor) ? 'flex' : 'none';
-                    });
-                });
-            }
-
-            if (botonSeleccionarVisibles) {
-                botonSeleccionarVisibles.addEventListener('click', function () {
-                    items.forEach(function (item) {
-                        if (item.style.display !== 'none') {
-                            const checkbox = item.querySelector('.empleado-checkbox');
-                            if (checkbox) {
-                                checkbox.checked = true;
-                            }
-                        }
-                    });
-                });
-            }
-
-            if (botonLimpiarSeleccion) {
-                botonLimpiarSeleccion.addEventListener('click', function () {
-                    document.querySelectorAll('.empleado-checkbox').forEach(function (checkbox) {
-                        checkbox.checked = false;
-                    });
-                });
-            }
-        });
-    </script>
 </x-app-layout>

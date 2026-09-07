@@ -95,3 +95,75 @@ Alpine.data('selectAutocomplete', (opciones, idInicial = '', nombreCampo = '') =
 }));
 
 Alpine.start();
+
+function normalizarBusqueda(valor) {
+    return String(valor ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
+
+function inicializarFiltroEmpleadosAsignacion() {
+    const lista = document.getElementById('lista-empleados');
+    const filtro = document.getElementById('filtro-empleados');
+
+    if (!lista || !filtro || lista.dataset.filtroInicializado === '1') {
+        return;
+    }
+
+    lista.dataset.filtroInicializado = '1';
+
+    const items = Array.from(lista.querySelectorAll('.empleado-item'));
+    const mensajeSinCoincidencias = document.getElementById('sin-coincidencias-empleados');
+    const botonSeleccionarVisibles = document.getElementById('seleccionar-visibles');
+    const botonLimpiarSeleccion = document.getElementById('limpiar-seleccion');
+
+    const filtrar = () => {
+        const valor = normalizarBusqueda(filtro.value);
+        let cantidadVisible = 0;
+
+        items.forEach((item) => {
+            const coincide = normalizarBusqueda(item.dataset.texto).includes(valor);
+            item.hidden = !coincide;
+
+            if (coincide) {
+                cantidadVisible += 1;
+            }
+        });
+
+        if (mensajeSinCoincidencias) {
+            mensajeSinCoincidencias.hidden = cantidadVisible > 0;
+        }
+    };
+
+    filtro.addEventListener('input', filtrar);
+
+    botonSeleccionarVisibles?.addEventListener('click', () => {
+        items.filter((item) => !item.hidden).forEach((item) => {
+            const checkbox = item.querySelector('.empleado-checkbox');
+
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    });
+
+    botonLimpiarSeleccion?.addEventListener('click', () => {
+        items.forEach((item) => {
+            const checkbox = item.querySelector('.empleado-checkbox');
+
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+        });
+    });
+
+    filtrar();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarFiltroEmpleadosAsignacion);
+} else {
+    inicializarFiltroEmpleadosAsignacion();
+}
