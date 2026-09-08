@@ -129,7 +129,7 @@
                             </div>
 
                             <div class="mt-3 text-xs font-semibold text-slate-400">
-                                Destinatarios: empleado, administrador e instructor.
+                                Destinatarios: empleado y usuarios seleccionados para avisos administrativos.
                             </div>
 
                             @if($tipo === 'por_vencer')
@@ -172,7 +172,7 @@
                         <select name="destinatario_tipo">
                             <option value="">Todos</option>
                             <option value="empleado" {{ $destinatarioTipo === 'empleado' ? 'selected' : '' }}>Empleado</option>
-                            <option value="admin" {{ $destinatarioTipo === 'admin' ? 'selected' : '' }}>Admin / Instructor</option>
+                            <option value="admin" {{ $destinatarioTipo === 'admin' ? 'selected' : '' }}>Aviso administrativo</option>
                         </select>
                     </div>
 
@@ -303,7 +303,7 @@
                                     </td>
 
                                     <td>
-                                        {{ $aviso->destinatario_tipo === 'admin' ? 'Admin / Instructor' : 'Empleado' }}
+                                        {{ $aviso->destinatario_tipo === 'admin' ? 'Administrativo' : 'Empleado' }}
                                     </td>
 
                                     <td class="min-w-[220px]">

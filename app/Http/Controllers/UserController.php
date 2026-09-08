@@ -388,6 +388,31 @@ class UserController extends Controller
         return redirect()->route('usuarios.index')->with('success', $mensaje);
     }
 
+    public function actualizarAvisosCorreo(Request $request, $id)
+    {
+        $data = $request->validate([
+            'recibe_avisos_capacitaciones' => ['required', 'boolean'],
+        ]);
+
+        $usuario = User::findOrFail($id);
+
+        if ((int) $usuario->estado !== 1) {
+            return redirect()->route('usuarios.index')->withErrors([
+                'general' => 'Solo los usuarios activos pueden configurarse como destinatarios de avisos.',
+            ]);
+        }
+
+        $usuario->update([
+            'recibe_avisos_capacitaciones' => (bool) $data['recibe_avisos_capacitaciones'],
+        ]);
+
+        $mensaje = $usuario->recibe_avisos_capacitaciones
+            ? "{$usuario->name} recibirá los avisos administrativos por correo."
+            : "{$usuario->name} ya no recibirá los avisos administrativos por correo.";
+
+        return redirect()->route('usuarios.index')->with('success', $mensaje);
+    }
+
     public function destroy($id)
     {
         $usuario = User::with(['rolesSistema', 'userRoles', 'empleadoUser', 'instructorUser'])->findOrFail($id);

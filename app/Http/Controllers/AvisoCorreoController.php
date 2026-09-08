@@ -18,7 +18,6 @@ class AvisoCorreoController extends Controller
         $fechaHasta = $request->query('fecha_hasta', '');
 
         $configuraciones = ConfiguracionAviso::orderBy('tipo_aviso')->get();
-
         $consultaAvisos = AvisoCorreo::with([
             'empleadoCapacitacion.empleado',
             'empleadoCapacitacion.capacitacion',

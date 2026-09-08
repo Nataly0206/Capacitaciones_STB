@@ -80,6 +80,7 @@ Route::middleware(['auth', 'active', 'password.changed'])->group(function () {
             Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
             Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
             Route::patch('/usuarios/{id}/toggle-estado', [UserController::class, 'toggleEstado'])->name('usuarios.toggleEstado');
+            Route::patch('/usuarios/{id}/avisos-correo', [UserController::class, 'actualizarAvisosCorreo'])->name('usuarios.avisos_correo');
             Route::post('/usuarios/{id}/generar-password-temporal', [UserController::class, 'generarPasswordTemporal'])
                 ->middleware('throttle:3,1')
                 ->name('usuarios.generar_password_temporal');

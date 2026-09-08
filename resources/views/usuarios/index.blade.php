@@ -74,6 +74,7 @@
                                     <th>Empleado vinculado</th>
                                     <th>Instructor vinculado</th>
                                     <th>Estado</th>
+                                    <th class="text-center">Recibe avisos</th>
                                     <th class="text-center">Acciones</th>
                                 </tr>
                             </thead>
@@ -166,6 +167,37 @@
                                             @endif
                                         </td>
 
+                                        <td class="text-center">
+                                            @if($usuario->estado == 1)
+                                                <form action="{{ route('usuarios.avisos_correo', $usuario->id) }}"
+                                                      method="POST"
+                                                      class="inline-flex items-center justify-center">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden"
+                                                           name="recibe_avisos_capacitaciones"
+                                                           value="{{ $usuario->recibe_avisos_capacitaciones ? 0 : 1 }}">
+
+                                                    <button type="submit"
+                                                            class="relative inline-flex h-9 w-[86px] items-center rounded-full border-2 border-white font-black text-white shadow-md transition hover:scale-105 focus:outline-none focus:ring-4 {{ $usuario->recibe_avisos_capacitaciones ? 'focus:ring-emerald-200' : 'focus:ring-red-200' }}"
+                                                            style="background-color: {{ $usuario->recibe_avisos_capacitaciones ? '#16a34a' : '#dc2626' }};"
+                                                            role="switch"
+                                                            aria-checked="{{ $usuario->recibe_avisos_capacitaciones ? 'true' : 'false' }}"
+                                                            title="{{ $usuario->recibe_avisos_capacitaciones ? 'Dejar de enviar avisos' : 'Enviar avisos a este usuario' }}">
+                                                        <span class="absolute text-xs tracking-wide"
+                                                              style="{{ $usuario->recibe_avisos_capacitaciones ? 'left: 12px;' : 'right: 10px;' }}">
+                                                            {{ $usuario->recibe_avisos_capacitaciones ? 'SÍ' : 'NO' }}
+                                                        </span>
+                                                        <span class="absolute h-6 w-6 rounded-full bg-white shadow transition-all"
+                                                              style="left: {{ $usuario->recibe_avisos_capacitaciones ? '56px' : '4px' }};"></span>
+                                                        <span class="sr-only">Cambiar recepción de avisos</span>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-xs font-bold text-slate-400">Inactivo</span>
+                                            @endif
+                                        </td>
+
                                         <td>
                                             <div class="flex flex-wrap justify-center gap-2">
                                                 <a href="{{ route('usuarios.edit', $usuario->id) }}"
@@ -239,7 +271,7 @@
                                 @endforelse
 
                                 <tr id="sinResultadosUsuariosSistema" class="hidden">
-                                    <td colspan="8">
+                                    <td colspan="9">
                                         <div class="py-10 text-center">
                                             <p class="text-lg font-black text-slate-800 dark:text-slate-100">
                                                 No se encontraron usuarios con ese criterio de búsqueda.

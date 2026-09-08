@@ -30,7 +30,7 @@ class AvisoCorreoService
         ];
 
         foreach ($configuraciones as $tipoAviso => $diasAnticipacion) {
-            ConfiguracionAviso::updateOrCreate(
+            ConfiguracionAviso::firstOrCreate(
                 ['tipo_aviso' => $tipoAviso],
                 [
                     'dias_anticipacion' => $diasAnticipacion,
@@ -64,7 +64,7 @@ class AvisoCorreoService
         ]);
 
         $usuario = $asignacion->empleado?->empleadoUser?->user;
-        $destinatarios = $this->obtenerDestinatariosAviso($asignacion);
+        $destinatarios = $this->obtenerDestinatariosAviso($asignacion, $configuracion);
 
         foreach ($destinatarios as $destinatario) {
             $aviso = $this->crearAvisoAsignacionSiNoExiste(
@@ -245,7 +245,7 @@ class AvisoCorreoService
                 'capacitacion.instructor',
             ]);
 
-            foreach ($this->obtenerDestinatariosAviso($asignacion) as $destinatario) {
+            foreach ($this->obtenerDestinatariosAviso($asignacion, $configuracion) as $destinatario) {
                 $creados += $this->crearAvisoSiNoExiste(
                     $asignacion,
                     $configuracion,
@@ -346,6 +346,15 @@ class AvisoCorreoService
 
     private function enviarAvisoIndividual(AvisoCorreo $aviso): bool
     {
+        if (!$this->avisoTieneDestinatarioActivo($aviso)) {
+            $aviso->update([
+                'estado' => 'cancelado',
+                'error_envio' => 'El destinatario está inactivo o dejó de estar habilitado para recibir avisos.',
+            ]);
+
+            return false;
+        }
+
         try {
             Mail::to($aviso->destinatario_email)->send(new AvisoCapacitacionMail($aviso));
 
@@ -406,6 +415,21 @@ class AvisoCorreoService
         foreach ($avisos as $aviso) {
             $resultado['procesados']++;
 
+            if (!$this->avisoTieneDestinatarioActivo($aviso)) {
+                $aviso->update([
+                    'estado' => 'cancelado',
+                    'error_envio' => 'El destinatario está inactivo o dejó de estar habilitado para recibir avisos.',
+                ]);
+
+                Log::info('STB avisos: envío cancelado por destinatario inactivo o no habilitado.', [
+                    'id_aviso_correo' => $aviso->id_aviso_correo,
+                    'destinatario_tipo' => $aviso->destinatario_tipo,
+                    'destinatario_email' => $aviso->destinatario_email,
+                ]);
+
+                continue;
+            }
+
             try {
                 Mail::to($aviso->destinatario_email)->send(new AvisoCapacitacionMail($aviso));
 
@@ -423,8 +447,6 @@ class AvisoCorreoService
                     'destinatario_tipo' => $aviso->destinatario_tipo,
                     'destinatario_email' => $aviso->destinatario_email,
                 ]);
-
-                $resultado['enviados']++;
 
                 $resultado['enviados']++;
             } catch (\Throwable $e) {
@@ -470,7 +492,10 @@ class AvisoCorreoService
         return Carbon::parse($asignacion->fecha_limite)->startOfDay();
     }
 
-    private function obtenerDestinatariosAviso(EmpleadoCapacitacion $asignacion): array
+    private function obtenerDestinatariosAviso(
+        EmpleadoCapacitacion $asignacion,
+        ConfiguracionAviso $configuracion
+    ): array
     {
         $asignacion->loadMissing([
             'empleado.empleadoUser.user',
@@ -479,47 +504,71 @@ class AvisoCorreoService
 
         $destinatarios = [];
 
-        $correoEmpleado = $asignacion->empleado?->empleadoUser?->user?->email
-            ?: $asignacion->empleado?->correo;
+        $empleado = $asignacion->empleado;
+        $usuarioEmpleado = $empleado?->empleadoUser?->user;
+        $empleadoActivo = (int) ($empleado?->estado ?? 0) === 1;
+        $usuarioEmpleadoActivo = !$usuarioEmpleado || (int) $usuarioEmpleado->estado === 1;
+        $correoEmpleado = $usuarioEmpleado?->email ?: $empleado?->correo;
 
-        if ($correoEmpleado) {
+        if ((int) $configuracion->enviar_a_empleado === 1
+            && $empleadoActivo
+            && $usuarioEmpleadoActivo
+            && $correoEmpleado) {
             $destinatarios[] = [
                 'tipo' => 'empleado',
                 'email' => $correoEmpleado,
             ];
         }
 
-        foreach ($this->obtenerAdministradores() as $admin) {
-            if ($admin->email) {
+        if ((int) $configuracion->enviar_a_admin === 1) {
+            foreach ($this->obtenerDestinatariosAdministrativos() as $destinatarioAdministrativo) {
                 $destinatarios[] = [
                     'tipo' => 'admin',
-                    'email' => $admin->email,
+                    'email' => $destinatarioAdministrativo->email,
                 ];
             }
         }
 
-        $correoInstructor = $asignacion->capacitacion?->instructor?->correo;
-
-        if ($correoInstructor) {
-            $destinatarios[] = [
-                'tipo' => 'admin',
-                'email' => $correoInstructor,
-            ];
-        }
-
         return collect($destinatarios)
             ->filter(fn ($destinatario) => !empty($destinatario['email']))
-            ->unique(fn ($destinatario) => $destinatario['tipo'] . '|' . mb_strtolower(trim($destinatario['email'])))
+            ->unique(fn ($destinatario) => mb_strtolower(trim($destinatario['email'])))
             ->values()
             ->all();
     }
 
-    private function obtenerAdministradores()
+    private function avisoTieneDestinatarioActivo(AvisoCorreo $aviso): bool
+    {
+        $correo = mb_strtolower(trim((string) $aviso->destinatario_email));
+
+        if ($correo === '') {
+            return false;
+        }
+
+        if ($aviso->destinatario_tipo === 'admin') {
+            return User::where('estado', 1)
+                ->where('recibe_avisos_capacitaciones', 1)
+                ->whereRaw('LOWER(email) = ?', [$correo])
+                ->exists();
+        }
+
+        $aviso->loadMissing('empleadoCapacitacion.empleado.empleadoUser.user');
+
+        $empleado = $aviso->empleadoCapacitacion?->empleado;
+        $usuario = $empleado?->empleadoUser?->user;
+
+        if (!$empleado || (int) $empleado->estado !== 1) {
+            return false;
+        }
+
+        return !$usuario || (int) $usuario->estado === 1;
+    }
+
+    private function obtenerDestinatariosAdministrativos()
     {
         return User::where('estado', 1)
-            ->whereHas('rolesSistema', function ($query) {
-                $query->where('rol', 'admin');
-            })
+            ->where('recibe_avisos_capacitaciones', 1)
+            ->whereNotNull('email')
+            ->where('email', '<>', '')
             ->get();
     }
 

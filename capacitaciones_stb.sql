@@ -185,6 +185,7 @@ CREATE TABLE [dbo].[users](
     [created_at] [datetime] NULL,
     [updated_at] [datetime] NULL,
     [estado] [int] NOT NULL,
+    [recibe_avisos_capacitaciones] [bit] NOT NULL,
     CONSTRAINT [PK_users_id] PRIMARY KEY CLUSTERED ([id] ASC)
 ) ON [PRIMARY]
 GO
@@ -907,6 +908,8 @@ ALTER TABLE [dbo].[configuracion_aviso] ADD CONSTRAINT [DF_configuracion_aviso_e
 GO
 ALTER TABLE [dbo].[configuracion_aviso] ADD CONSTRAINT [DF_configuracion_aviso_activo] DEFAULT ((1)) FOR [activo]
 GO
+ALTER TABLE [dbo].[users] ADD CONSTRAINT [DF_users_recibe_avisos_capacitaciones] DEFAULT ((0)) FOR [recibe_avisos_capacitaciones]
+GO
 ALTER TABLE [dbo].[aviso_correo] ADD CONSTRAINT [DF_aviso_correo_estado] DEFAULT ('pendiente') FOR [estado]
 GO
 ALTER TABLE [dbo].[aviso_correo] ADD CONSTRAINT [DF_aviso_correo_intentos] DEFAULT ((0)) FOR [intentos_envio]
@@ -1547,6 +1550,19 @@ BEGIN
         EXEC sp_executesql @SQLSpatie;
     END
 END
+GO
+
+UPDATE u
+SET u.recibe_avisos_capacitaciones = 1
+FROM dbo.users u
+WHERE u.estado = 1
+  AND EXISTS (
+      SELECT 1
+      FROM dbo.user_rol ur
+      INNER JOIN dbo.rol r ON r.id_rol = ur.id_rol
+      WHERE ur.id_user = u.id
+        AND r.rol = 'admin'
+  )
 GO
 
 INSERT INTO [dbo].[configuracion_aviso] ([tipo_aviso], [dias_anticipacion], [enviar_a_empleado], [enviar_a_admin], [activo]) VALUES ('asignada', NULL, 1, 1, 1)

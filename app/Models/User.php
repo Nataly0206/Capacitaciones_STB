@@ -68,6 +68,7 @@ class User extends Authenticatable
         'email_verified_at',
         'remember_token',
         'estado',
+        'recibe_avisos_capacitaciones',
     ];
 
     protected $hidden = [
@@ -82,6 +83,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'estado' => 'integer',
+            'recibe_avisos_capacitaciones' => 'boolean',
             'debe_cambiar_password' => 'integer',
             'password_temporal_expira_en' => 'datetime',
         ];
