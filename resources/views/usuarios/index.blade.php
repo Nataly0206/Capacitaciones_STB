@@ -179,18 +179,15 @@
                                                            value="{{ $usuario->recibe_avisos_capacitaciones ? 0 : 1 }}">
 
                                                     <button type="submit"
-                                                            class="relative inline-flex h-9 w-[86px] items-center rounded-full border-2 border-white font-black text-white shadow-md transition hover:scale-105 focus:outline-none focus:ring-4 {{ $usuario->recibe_avisos_capacitaciones ? 'focus:ring-emerald-200' : 'focus:ring-red-200' }}"
-                                                            style="background-color: {{ $usuario->recibe_avisos_capacitaciones ? '#16a34a' : '#dc2626' }};"
+                                                            class="esf-avisos-switch {{ $usuario->recibe_avisos_capacitaciones ? 'is-on' : 'is-off' }}"
                                                             role="switch"
                                                             aria-checked="{{ $usuario->recibe_avisos_capacitaciones ? 'true' : 'false' }}"
+                                                            aria-label="Cambiar recepción de avisos de {{ $usuario->name }}"
                                                             title="{{ $usuario->recibe_avisos_capacitaciones ? 'Dejar de enviar avisos' : 'Enviar avisos a este usuario' }}">
-                                                        <span class="absolute text-xs tracking-wide"
-                                                              style="{{ $usuario->recibe_avisos_capacitaciones ? 'left: 12px;' : 'right: 10px;' }}">
+                                                        <span class="esf-avisos-switch-label" aria-hidden="true">
                                                             {{ $usuario->recibe_avisos_capacitaciones ? 'SÍ' : 'NO' }}
                                                         </span>
-                                                        <span class="absolute h-6 w-6 rounded-full bg-white shadow transition-all"
-                                                              style="left: {{ $usuario->recibe_avisos_capacitaciones ? '56px' : '4px' }};"></span>
-                                                        <span class="sr-only">Cambiar recepción de avisos</span>
+                                                        <span class="esf-avisos-switch-knob" aria-hidden="true"></span>
                                                     </button>
                                                 </form>
                                             @else

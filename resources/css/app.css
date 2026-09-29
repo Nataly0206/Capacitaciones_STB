@@ -8770,5 +8770,94 @@
     .dark .esf-needs-person-role strong { color: #bfdbfe; }
     @media (max-width: 768px) { .esf-needs-person-card { grid-template-columns: auto 1fr; } .esf-needs-person-role { grid-column: 1 / -1; border-left: 0; border-top: 1px solid #e2e8f0; padding-top: 1rem; padding-left: 0; } }
 
+    /* Interruptor "Recibe avisos" (usuarios). Selector con [type="submit"] para
+       ganarle a la regla global .esf-shell main form button[type="submit"]. */
+    .esf-shell main form button.esf-avisos-switch[type="submit"],
+    button.esf-avisos-switch[type="submit"] {
+        position: relative !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+        width: 76px !important;
+        min-width: 76px !important;
+        max-width: 76px !important;
+        height: 34px !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        border: 0 !important;
+        border-radius: 999px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        color: #ffffff !important;
+        font-size: 0.75rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.04em !important;
+        line-height: 1 !important;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.15) !important;
+        cursor: pointer !important;
+        transition: background-color 180ms ease, box-shadow 180ms ease !important;
+    }
 
+    .esf-shell main form button.esf-avisos-switch.is-on[type="submit"],
+    button.esf-avisos-switch.is-on[type="submit"] {
+        background: #16a34a !important;
+    }
+
+    .esf-shell main form button.esf-avisos-switch.is-off[type="submit"],
+    button.esf-avisos-switch.is-off[type="submit"] {
+        background: #cbd5e1 !important;
+        color: #334155 !important;
+    }
+
+    .esf-shell main form button.esf-avisos-switch[type="submit"]:hover,
+    button.esf-avisos-switch[type="submit"]:hover {
+        transform: none !important;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.15), 0 0 0 4px rgba(148, 163, 184, 0.25) !important;
+    }
+
+    .esf-shell main form button.esf-avisos-switch.is-on[type="submit"]:hover,
+    button.esf-avisos-switch.is-on[type="submit"]:hover {
+        background: #15803d !important;
+    }
+
+    .esf-shell main form button.esf-avisos-switch.is-off[type="submit"]:hover,
+    button.esf-avisos-switch.is-off[type="submit"]:hover {
+        background: #94a3b8 !important;
+    }
+
+    button.esf-avisos-switch:focus-visible {
+        outline: 3px solid #93c5fd !important;
+        outline-offset: 2px !important;
+    }
+
+    .esf-avisos-switch .esf-avisos-switch-label {
+        position: absolute !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        overflow-wrap: normal !important;
+        pointer-events: none;
+    }
+
+    .esf-avisos-switch.is-on .esf-avisos-switch-label { left: 12px !important; right: auto !important; }
+    .esf-avisos-switch.is-off .esf-avisos-switch-label { right: 11px !important; left: auto !important; }
+
+    .esf-avisos-switch .esf-avisos-switch-knob {
+        position: absolute !important;
+        top: 4px !important;
+        width: 26px !important;
+        height: 26px !important;
+        border-radius: 999px !important;
+        background: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3) !important;
+        transition: left 180ms ease !important;
+        pointer-events: none;
+    }
+
+    .esf-avisos-switch.is-on .esf-avisos-switch-knob { left: 46px !important; }
+    .esf-avisos-switch.is-off .esf-avisos-switch-knob { left: 4px !important; }
+
+    .dark button.esf-avisos-switch.is-off[type="submit"] {
+        background: #475569 !important;
+        color: #e2e8f0 !important;
+    }
 }
