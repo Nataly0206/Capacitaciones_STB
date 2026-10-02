@@ -63,11 +63,20 @@
                 </div>
 
                 <div class="p-4 sm:p-6">
-                    <div class="esf-table-wrap">
-                        <table class="esf-table">
+                    <div class="esf-table-wrap esf-users-table-wrap">
+                        <table class="esf-table esf-users-table">
+                            <colgroup>
+                                <col style="width: 20%">
+                                <col style="width: 18%">
+                                <col style="width: 9%">
+                                <col style="width: 13%">
+                                <col style="width: 12%">
+                                <col style="width: 9%">
+                                <col style="width: 8%">
+                                <col style="width: 11%">
+                            </colgroup>
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Usuario</th>
                                     <th>Correo</th>
                                     <th>Rol</th>
@@ -96,23 +105,17 @@
 
                                     <tr data-usuario-sistema-row>
                                         <td>
-                                            <span class="font-black text-slate-700 dark:text-slate-200">
-                                                {{ $usuario->id }}
-                                            </span>
-                                        </td>
-
-                                        <td>
-                                            <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-2 min-w-0">
                                                 <div class="esf-user-avatar">
                                                     {{ $inicialesUsuario ?: 'US' }}
                                                 </div>
 
-                                                <div>
-                                                    <p class="font-black text-slate-900 dark:text-slate-100">
+                                                <div class="min-w-0 flex-1">
+                                                    <p title="{{ $usuario->name }}" class="esf-users-truncate font-black text-slate-900 dark:text-slate-100">
                                                         {{ $usuario->name }}
                                                     </p>
 
-                                                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                                    <p title="{{ '@'.$usuario->username }}" class="esf-users-truncate text-xs font-semibold text-slate-500 dark:text-slate-400">
                                                         {{ '@'.$usuario->username }}
                                                     </p>
 
@@ -126,7 +129,7 @@
                                         </td>
 
                                         <td>
-                                            <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                                            <span title="{{ $usuario->email }}" class="esf-users-truncate text-sm font-semibold text-slate-600 dark:text-slate-300">
                                                 {{ $usuario->email }}
                                             </span>
                                         </td>
@@ -138,13 +141,13 @@
                                         </td>
 
                                         <td>
-                                            <span class="{{ $empleadoVinculado === 'Sin vínculo' ? 'text-slate-400 dark:text-slate-500' : 'font-semibold text-slate-700 dark:text-slate-200' }}">
+                                            <span title="{{ $empleadoVinculado }}" class="esf-users-truncate {{ $empleadoVinculado === 'Sin vínculo' ? 'text-slate-400 dark:text-slate-500' : 'font-semibold text-slate-700 dark:text-slate-200' }}">
                                                 {{ $empleadoVinculado }}
                                             </span>
                                         </td>
 
                                         <td>
-                                            <span class="{{ $instructorVinculado === 'Sin vínculo' ? 'text-slate-400 dark:text-slate-500' : 'font-semibold text-slate-700 dark:text-slate-200' }}">
+                                            <span title="{{ $instructorVinculado }}" class="esf-users-truncate {{ $instructorVinculado === 'Sin vínculo' ? 'text-slate-400 dark:text-slate-500' : 'font-semibold text-slate-700 dark:text-slate-200' }}">
                                                 {{ $instructorVinculado }}
                                             </span>
                                         </td>
@@ -268,7 +271,7 @@
                                 @endforelse
 
                                 <tr id="sinResultadosUsuariosSistema" class="hidden">
-                                    <td colspan="9">
+                                    <td colspan="8">
                                         <div class="py-10 text-center">
                                             <p class="text-lg font-black text-slate-800 dark:text-slate-100">
                                                 No se encontraron usuarios con ese criterio de búsqueda.
@@ -314,7 +317,7 @@
                 let visibles = 0;
 
                 filas.forEach(function (fila) {
-                    const celdas = Array.from(fila.querySelectorAll('td')).slice(0, 7);
+                    const celdas = Array.from(fila.querySelectorAll('td')).slice(0, 6);
                     const textoFila = normalizarTexto(celdas.map(function (celda) {
                         return celda.textContent;
                     }).join(' '));

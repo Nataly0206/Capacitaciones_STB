@@ -133,8 +133,16 @@
                 </div>
 
                 <div class="p-4 sm:p-6">
-                    <div class="esf-table-wrap">
-                        <table class="esf-table">
+                    <div class="esf-table-wrap esf-assignments-table-wrap">
+                        <table class="esf-table esf-assignments-table">
+                            <colgroup>
+                                <col style="width: 24%">
+                                <col style="width: 25%">
+                                <col style="width: 12%">
+                                <col style="width: 15%">
+                                <col style="width: 10%">
+                                <col style="width: 14%">
+                            </colgroup>
                             <thead>
                                 <tr>
                                     <th>Empleado</th>
@@ -181,13 +189,13 @@
 
                                     <tr>
                                         <td>
-                                            <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-2 min-w-0">
                                                 <div class="esf-user-avatar">
                                                     {{ $inicialesEmpleado ?: 'EM' }}
                                                 </div>
 
-                                                <div>
-                                                    <p class="font-black text-slate-900 dark:text-slate-100">
+                                                <div class="min-w-0 flex-1">
+                                                    <p title="{{ $asignacion->empleado?->nombre_completo ?? 'Sin empleado' }}" class="esf-assignments-truncate font-black text-slate-900 dark:text-slate-100">
                                                         {{ $asignacion->empleado?->nombre_completo ?? 'Sin empleado' }}
                                                     </p>
 
@@ -199,7 +207,7 @@
                                         </td>
 
                                         <td>
-                                            <p class="font-semibold text-slate-700 dark:text-slate-200">
+                                            <p title="{{ $asignacion->capacitacion?->capacitacion ?? 'Sin capacitación' }}" class="esf-assignments-truncate font-semibold text-slate-700 dark:text-slate-200">
                                                 {{ $asignacion->capacitacion?->capacitacion ?? 'Sin capacitación' }}
                                             </p>
                                         </td>
@@ -211,8 +219,8 @@
                                         </td>
 
                                         <td>
-                                            <div class="min-w-[150px]">
-                                                <div class="flex items-center justify-between gap-3 mb-2">
+                                            <div class="min-w-0">
+                                                <div class="flex flex-wrap items-center justify-between gap-1 mb-2">
                                                     <span class="text-xs font-black text-slate-500 dark:text-slate-400">
                                                         Avance
                                                     </span>

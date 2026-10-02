@@ -15,8 +15,8 @@
         </div>
     </x-slot>
 
-    <div class="py-8 esf-seguimiento-page">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-8 esf-seguimiento-page esf-reports-page">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
 
             @if(session('success'))
                 <div class="mb-5 rounded-3xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800 shadow-sm">
@@ -70,11 +70,15 @@
 
             <form method="GET"
                   action="{{ route('reportes.index') }}"
-                  class="esf-seguimiento-panel p-5 sm:p-6">
-                <div class="esf-seguimiento-filter-grid">
+                  class="esf-seguimiento-panel esf-reports-filters">
+                <div class="esf-reports-filter-heading">
+                    <span class="font-black text-sm text-slate-700 dark:text-slate-200">Filtros del reporte</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">Refina los resultados y exporta tu consulta</span>
+                </div>
+                <div class="esf-seguimiento-filter-grid esf-reports-filter-grid">
                     <div>
-                        <label>Tipo de reporte</label>
-                        <select name="tipo_reporte">
+                        <label for="reporte-tipo_reporte">Tipo de reporte</label>
+                        <select id="reporte-tipo_reporte" name="tipo_reporte">
                             @foreach($tiposReporte as $valor => $texto)
                                 <option value="{{ $valor }}" {{ $tipoReporte === $valor ? 'selected' : '' }}>
                                     {{ $texto }}
@@ -84,9 +88,9 @@
                     </div>
 
                     <div>
-                        <label>Buscar</label>
+                        <label for="reporte-buscar">Buscar</label>
                         <input
-                            type="text"
+                            id="reporte-buscar" type="text"
                             name="buscar"
                             value="{{ $buscar }}"
                             placeholder="Empleado, código, identidad o capacitación"
@@ -94,8 +98,8 @@
                     </div>
 
                     <div>
-                        <label>Empleado</label>
-                        <select name="id_empleado">
+                        <label for="reporte-id_empleado">Empleado</label>
+                        <select id="reporte-id_empleado" name="id_empleado">
                             <option value="">Todos los empleados</option>
                             @foreach($empleados as $empleado)
                                 <option value="{{ $empleado->id_empleado }}" {{ (string) $idEmpleado === (string) $empleado->id_empleado ? 'selected' : '' }}>
@@ -109,8 +113,8 @@
                     </div>
 
                     <div>
-                        <label>Capacitación</label>
-                        <select name="id_capacitacion">
+                        <label for="reporte-id_capacitacion">Capacitación</label>
+                        <select id="reporte-id_capacitacion" name="id_capacitacion">
                             <option value="">Todas las capacitaciones</option>
                             @foreach($capacitaciones as $capacitacion)
                                 <option value="{{ $capacitacion->id_capacitacion }}" {{ (string) $idCapacitacion === (string) $capacitacion->id_capacitacion ? 'selected' : '' }}>
@@ -120,9 +124,13 @@
                         </select>
                     </div>
 
+                </div>
+                <details class="esf-reports-more-filters" @if(collect([$idDepartamento, $idPuestoTrabajoMatriz, $estado, $aprobado, $fechaDesde, $fechaHasta])->contains(fn ($valor) => $valor !== null && $valor !== '')) open @endif>
+                    <summary>Más filtros <span>Departamento, puesto, estado y fechas</span></summary>
+                    <div class="esf-seguimiento-filter-grid esf-reports-filter-grid">
                     <div>
-                        <label>Departamento</label>
-                        <select name="id_departamento">
+                        <label for="reporte-id_departamento">Departamento</label>
+                        <select id="reporte-id_departamento" name="id_departamento">
                             <option value="">Todos los departamentos</option>
                             @foreach($departamentos as $departamento)
                                 <option value="{{ $departamento->id_departamento }}" {{ (string) $idDepartamento === (string) $departamento->id_departamento ? 'selected' : '' }}>
@@ -133,8 +141,8 @@
                     </div>
 
                     <div>
-                        <label>Puesto</label>
-                        <select name="id_puesto_trabajo_matriz">
+                        <label for="reporte-id_puesto_trabajo_matriz">Puesto</label>
+                        <select id="reporte-id_puesto_trabajo_matriz" name="id_puesto_trabajo_matriz">
                             <option value="">Todos los puestos</option>
                             @foreach($puestos as $puesto)
                                 <option value="{{ $puesto->id_puesto_trabajo_matriz }}" {{ (string) $idPuestoTrabajoMatriz === (string) $puesto->id_puesto_trabajo_matriz ? 'selected' : '' }}>
@@ -148,8 +156,8 @@
                     </div>
 
                     <div>
-                        <label>Estado</label>
-                        <select name="estado">
+                        <label for="reporte-estado">Estado</label>
+                        <select id="reporte-estado" name="estado">
                             <option value="">Todos los estados</option>
                             @foreach($estados as $itemEstado)
                                 @php
@@ -172,8 +180,8 @@
                     </div>
 
                     <div>
-                        <label>Aprobado</label>
-                        <select name="aprobado">
+                        <label for="reporte-aprobado">Aprobado</label>
+                        <select id="reporte-aprobado" name="aprobado">
                             <option value="">Todos</option>
                             <option value="1" {{ $aprobado === '1' ? 'selected' : '' }}>Sí</option>
                             <option value="0" {{ $aprobado === '0' ? 'selected' : '' }}>No</option>
@@ -181,34 +189,35 @@
                     </div>
 
                     <div>
-                        <label>Fecha asignación desde</label>
+                        <label for="reporte-fecha_desde">Fecha asignación desde</label>
                         <input
-                            type="date"
+                            id="reporte-fecha_desde" type="date"
                             name="fecha_desde"
                             value="{{ $fechaDesde }}"
                         >
                     </div>
 
                     <div>
-                        <label>Fecha asignación hasta</label>
+                        <label for="reporte-fecha_hasta">Fecha asignación hasta</label>
                         <input
-                            type="date"
+                            id="reporte-fecha_hasta" type="date"
                             name="fecha_hasta"
                             value="{{ $fechaHasta }}"
                         >
                     </div>
 
-                    <div class="xl:col-start-4 flex items-end justify-end gap-3">
-                        <button type="submit" class="esf-btn esf-btn-primary min-w-[110px]">
+                    </div>
+                </details>
+                    <div class="esf-reports-filter-actions">
+                        <button type="submit" class="esf-btn esf-btn-primary">
                             Filtrar
                         </button>
 
                         <a href="{{ route('reportes.index') }}"
-                           class="esf-btn esf-btn-soft min-w-[110px] text-center">
+                           class="esf-btn esf-btn-soft text-center">
                             Limpiar
                         </a>
                     </div>
-                </div>
             </form>
 
             <div class="esf-seguimiento-table-card esf-admin-sheet-card esf-history-card">
@@ -221,7 +230,7 @@
                         </h3>
 
                         <p class="esf-admin-table-subtitle">
-                            Cada tarjeta muestra al empleado una sola vez y debajo lista todas sus capacitaciones encontradas con los filtros actuales.
+                            Capacitaciones y avance de cada empleado según los filtros seleccionados.
                         </p>
                     </div>
 

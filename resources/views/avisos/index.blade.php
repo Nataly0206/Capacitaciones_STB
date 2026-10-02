@@ -15,8 +15,8 @@
         </div>
     </x-slot>
 
-    <div class="py-8 esf-seguimiento-page">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-4 esf-seguimiento-page esf-tracking-compact esf-mail-page">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             @if(session('success'))
                 <div class="mb-5 rounded-3xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800 shadow-sm">
@@ -30,122 +30,25 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-blue">
-                    <p>Asignaciones</p>
-                    <p>{{ $resumen['asignaciones'] }}</p>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-amber">
-                    <p>Retrasadas</p>
-                    <p>{{ $resumen['retrasadas'] }}</p>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-amber">
-                    <p>Pendientes</p>
-                    <p>{{ $resumen['pendientes'] }}</p>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-green">
-                    <p>Enviados</p>
-                    <p>{{ $resumen['enviados'] }}</p>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-red">
-                    <p>Errores</p>
-                    <p>{{ $resumen['errores'] }}</p>
-                </div>
-            </div>
-
-            <div class="esf-seguimiento-table-card esf-admin-sheet-card">
-                <div class="esf-admin-table-toolbar">
-                    <div>
-                        <h3 class="esf-admin-table-title">
-                            Reglas automáticas de avisos
-                        </h3>
-
-                        <p class="esf-admin-table-subtitle">
-                            Estas reglas ya quedan fijas en el sistema. El administrador no necesita generar ni enviar avisos manualmente.
-                        </p>
-                    </div>
-                </div>
-
-                @php
-                    $configuracionPorTipo = $configuraciones->keyBy('tipo_aviso');
-
-                    $reglasAvisos = [
-                        'asignada' => [
-                            'titulo' => 'Nueva asignación',
-                            'descripcion' => 'Se envía inmediatamente al guardar una asignación manual.',
-                            'programacion' => 'Inmediato al guardar',
-                        ],
-                        'por_vencer' => [
-                            'titulo' => 'Por vencer',
-                            'descripcion' => 'Se envía cuando falten exactamente 2 días para la fecha de vencimiento.',
-                            'programacion' => 'Automático a las 9:00 a. m.',
-                        ],
-                        'vencida' => [
-                            'titulo' => 'Retrasada',
-                            'descripcion' => 'Se envía cuando la capacitación ya venció y sigue pendiente, en proceso o vencida.',
-                            'programacion' => 'Automático a las 9:00 a. m.',
-                        ],
-                        'terminada' => [
-                            'titulo' => 'Finalización',
-                            'descripcion' => 'Se envía cuando la capacitación ya finalizó según fecha de finalización o vencimiento.',
-                            'programacion' => 'Automático a las 9:00 a. m.',
-                        ],
-                    ];
-                @endphp
-
-                <div class="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-4">
-                    @foreach($reglasAvisos as $tipo => $regla)
-                        @php
-                            $configuracion = $configuracionPorTipo->get($tipo);
-                        @endphp
-
-                        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-                            <div class="flex items-start justify-between gap-3">
-                                <div>
-                                    <p class="text-sm font-black text-slate-900 dark:text-slate-100">
-                                        {{ $regla['titulo'] }}
-                                    </p>
-
-                                    <p class="mt-1 text-xs font-semibold text-slate-400">
-                                        {{ $tipo }}
-                                    </p>
-                                </div>
-
-                                <span class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
-                                    Activo
-                                </span>
-                            </div>
-
-                            <p class="mt-4 text-sm font-semibold text-slate-600 dark:text-slate-300">
-                                {{ $regla['descripcion'] }}
-                            </p>
-
-                            <div class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-xs font-black text-slate-500 dark:bg-slate-800 dark:text-slate-300">
-                                {{ $regla['programacion'] }}
-                            </div>
-
-                            <div class="mt-3 text-xs font-semibold text-slate-400">
-                                Destinatarios: empleado y usuarios seleccionados para avisos administrativos.
-                            </div>
-
-                            @if($tipo === 'por_vencer')
-                                <div class="mt-2 text-xs font-semibold text-slate-400">
-                                    Días configurados: {{ $configuracion->dias_anticipacion ?? 2 }}
-                                </div>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            </div>
+            <dl class="esf-tracking-summary esf-mail-summary" aria-label="Resumen de avisos">
+                <div class="esf-tracking-stat-blue"><dt>Asignaciones</dt><dd>{{ $resumen['asignaciones'] }}</dd></div>
+                <div class="esf-tracking-stat-amber"><dt>Retrasadas</dt><dd>{{ $resumen['retrasadas'] }}</dd></div>
+                <div class="esf-tracking-stat-amber"><dt>Pendientes</dt><dd>{{ $resumen['pendientes'] }}</dd></div>
+                <div class="esf-tracking-stat-green"><dt>Enviados</dt><dd>{{ $resumen['enviados'] }}</dd></div>
+                <div class="esf-tracking-stat-red"><dt>Errores</dt><dd>{{ $resumen['errores'] }}</dd></div>
+            </dl>
 
             <form method="GET"
                   action="{{ route('avisos.index') }}"
-                  class="esf-seguimiento-panel p-5 sm:p-6">
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                  class="esf-tracking-filters">
+                <div class="esf-tracking-primary-filters">
+                    <div>
+                        <label>Destinatario o asunto</label>
+                        <input type="text"
+                               name="buscar"
+                               value="{{ $buscar }}"
+                               placeholder="Buscar por correo, empleado o capacitación">
+                    </div>
                     <div>
                         <label>Estado</label>
                         <select name="estado">
@@ -155,7 +58,6 @@
                             <option value="error" {{ $estado === 'error' ? 'selected' : '' }}>Error</option>
                         </select>
                     </div>
-
                     <div>
                         <label>Tipo de aviso</label>
                         <select name="tipo_aviso">
@@ -166,7 +68,23 @@
                             <option value="terminada" {{ $tipoAviso === 'terminada' ? 'selected' : '' }}>Finalización</option>
                         </select>
                     </div>
+                    <div class="esf-tracking-filter-actions">
+                        <button type="submit" class="esf-btn esf-btn-primary ">
+                            Filtrar
+                        </button>
 
+                        <a href="{{ route('avisos.index') }}"
+                           class="esf-btn esf-btn-soft  text-center">
+                            Limpiar
+                        </a>
+                    </div>
+                </div>
+                @php
+                    $filtrosAdicionales = collect([$destinatarioTipo, $fechaDesde, $fechaHasta])->filter(fn ($valor) => filled($valor))->count();
+                @endphp
+                <details class="esf-tracking-more-filters" @if($filtrosAdicionales) open @endif>
+                    <summary>Más filtros @if($filtrosAdicionales)<span>· {{ $filtrosAdicionales }} activos</span>@endif</summary>
+                    <div class="esf-tracking-advanced-filters">
                     <div>
                         <label>Destinatario</label>
                         <select name="destinatario_tipo">
@@ -175,53 +93,26 @@
                             <option value="admin" {{ $destinatarioTipo === 'admin' ? 'selected' : '' }}>Aviso administrativo</option>
                         </select>
                     </div>
-
-                    <div>
-                        <label>Destinatario o asunto</label>
-                        <input type="text"
-                               name="buscar"
-                               value="{{ $buscar }}"
-                               placeholder="Buscar por correo, empleado o capacitación">
-                    </div>
-
                     <div>
                         <label>Desde</label>
                         <input type="date" name="fecha_desde" value="{{ $fechaDesde }}">
                     </div>
-
                     <div>
                         <label>Hasta</label>
                         <input type="date" name="fecha_hasta" value="{{ $fechaHasta }}">
                     </div>
-
-                    <div class="md:col-span-2 flex items-end justify-end gap-3">
-                        <button type="submit" class="esf-btn esf-btn-primary min-w-[110px]">
-                            Filtrar
-                        </button>
-
-                        <a href="{{ route('avisos.index') }}"
-                           class="esf-btn esf-btn-soft min-w-[110px] text-center">
-                            Limpiar
-                        </a>
                     </div>
-                </div>
+                </details>
             </form>
 
-            <div class="esf-seguimiento-table-card esf-admin-sheet-card">
-                <div class="esf-admin-table-toolbar">
-                    <div>
-                        <h3 class="esf-admin-table-title">
-                            Avisos generados
-                        </h3>
-
-                        <p class="esf-admin-table-subtitle">
-                            Historial de avisos creados y enviados automáticamente por el sistema.
-                        </p>
-                    </div>
+            <div class="esf-seguimiento-table-card esf-admin-sheet-card" x-data="{ detalles: false }">
+                <div class="esf-tracking-table-toolbar">
+                    <span><strong>Avisos generados</strong> · {{ $avisos->total() }} registros</span>
+                    <label><input type="checkbox" x-model="detalles"> Ver todas las columnas</label>
                 </div>
 
                 <div class="esf-seguimiento-table-scroll esf-no-sticky-fields">
-                    <table class="esf-seguimiento-table-modern min-w-[1200px]">
+                    <table class="esf-seguimiento-table-modern esf-mail-table" :class="{ 'esf-mail-table-expanded': detalles }">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -281,7 +172,7 @@
                                     </td>
 
                                     <td>
-                                        <div class="flex items-center gap-3 min-w-[220px]">
+                                        <div class="flex items-center gap-2 min-w-[160px]">
                                             <div class="esf-admin-initials">
                                                 {{ $inicialesAviso }}
                                             </div>
@@ -292,13 +183,13 @@
                                                 </div>
 
                                                 <div class="text-xs font-semibold text-slate-400">
-                                                    Destinatario relacionado
+                                                    Empleado relacionado
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
 
-                                    <td class="min-w-[220px] font-semibold">
+                                    <td class="min-w-[160px] font-semibold">
                                         {{ $aviso->empleadoCapacitacion?->capacitacion?->capacitacion ?? '-' }}
                                     </td>
 
@@ -306,11 +197,11 @@
                                         {{ $aviso->destinatario_tipo === 'admin' ? 'Administrativo' : 'Empleado' }}
                                     </td>
 
-                                    <td class="min-w-[220px]">
+                                    <td class="min-w-[160px]">
                                         {{ $aviso->destinatario_email }}
                                     </td>
 
-                                    <td class="min-w-[260px]">
+                                    <td class="min-w-[180px]">
                                         {{ $aviso->asunto }}
                                     </td>
 
@@ -351,6 +242,73 @@
                     </div>
                 </div>
             </div>
+
+            <details class="esf-mail-rules">
+                <summary>Reglas automáticas de avisos <span>Ver condiciones y horarios</span></summary>
+                <p class="esf-mail-rules-intro">Los avisos se generan y envían automáticamente. Destinatarios: empleado y usuarios seleccionados para avisos administrativos.</p>
+                @php
+                    $configuracionPorTipo = $configuraciones->keyBy('tipo_aviso');
+
+                    $reglasAvisos = [
+                        'asignada' => [
+                            'titulo' => 'Nueva asignación',
+                            'descripcion' => 'Se envía inmediatamente al guardar una asignación manual.',
+                            'programacion' => 'Inmediato al guardar',
+                        ],
+                        'por_vencer' => [
+                            'titulo' => 'Por vencer',
+                            'descripcion' => 'Se envía cuando falten exactamente 2 días para la fecha de vencimiento.',
+                            'programacion' => 'Automático a las 9:00 a. m.',
+                        ],
+                        'vencida' => [
+                            'titulo' => 'Retrasada',
+                            'descripcion' => 'Se envía cuando la capacitación ya venció y sigue pendiente, en proceso o vencida.',
+                            'programacion' => 'Automático a las 9:00 a. m.',
+                        ],
+                        'terminada' => [
+                            'titulo' => 'Finalización',
+                            'descripcion' => 'Se envía cuando la capacitación ya finalizó según fecha de finalización o vencimiento.',
+                            'programacion' => 'Automático a las 9:00 a. m.',
+                        ],
+                    ];
+                @endphp
+
+                <div class="esf-mail-rule-grid">
+                    @foreach($reglasAvisos as $tipo => $regla)
+                        @php
+                            $configuracion = $configuracionPorTipo->get($tipo);
+                        @endphp
+
+                        <div class="esf-mail-rule">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <p class="text-sm font-black text-slate-900 dark:text-slate-100">
+                                        {{ $regla['titulo'] }}
+                                    </p>
+                                </div>
+
+                                <span class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+                                    Activo
+                                </span>
+                            </div>
+
+                            <p class="mt-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                                {{ $regla['descripcion'] }}
+                            </p>
+
+                            <div class="mt-2 rounded-lg bg-slate-50 px-3 py-2 text-xs font-black text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+                                {{ $regla['programacion'] }}
+                            </div>
+
+                            @if($tipo === 'por_vencer')
+                                <div class="mt-2 text-xs font-semibold text-slate-400">
+                                    Días configurados: {{ $configuracion->dias_anticipacion ?? 2 }}
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </details>
 
         </div>
     </div>

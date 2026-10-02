@@ -83,7 +83,7 @@ class CapacitacionRecursoController extends Controller
             'contenido_texto' => ['nullable', 'string'],
             'permite_descarga' => ['required', 'in:0,1'],
         ], [
-            'archivo_recurso.uploaded' => 'No se pudo cargar el recurso. Verifica que el archivo no supere los 200 MB e inténtalo nuevamente.',
+            'archivo_recurso.uploaded' => 'El servidor no pudo recibir el archivo. Puede deberse al límite de carga de PHP o a una carga interrumpida. Selecciona el archivo nuevamente; si el problema persiste, contacta al administrador.',
             'archivo_recurso.file' => 'El recurso debe ser un archivo válido.',
             'archivo_recurso.max' => 'El archivo no puede superar los 200 MB.',
             'archivo_recurso.mimes' => 'El archivo debe ser un documento, imagen, video, audio o archivo comprimido válido.',
@@ -191,7 +191,7 @@ class CapacitacionRecursoController extends Controller
             'contenido_texto' => ['nullable', 'string'],
             'permite_descarga' => ['required', 'in:0,1'],
         ], [
-            'archivo_recurso.uploaded' => 'No se pudo cargar el recurso. Verifica que el archivo no supere los 200 MB e inténtalo nuevamente.',
+            'archivo_recurso.uploaded' => 'El servidor no pudo recibir el archivo. Puede deberse al límite de carga de PHP o a una carga interrumpida. Selecciona el archivo nuevamente; si el problema persiste, contacta al administrador.',
             'archivo_recurso.file' => 'El recurso debe ser un archivo válido.',
             'archivo_recurso.max' => 'El archivo no puede superar los 200 MB.',
             'archivo_recurso.mimes' => 'El archivo debe ser un documento, imagen, video, audio o archivo comprimido válido.',

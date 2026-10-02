@@ -256,6 +256,8 @@ npm run dev
 
 Abra `http://127.0.0.1:8000` e inicie sesión con el administrador creado.
 
+Para subir recursos de hasta 200 MB, configure `upload_max_filesize=250M` y `post_max_size=260M` en la versión de PHP que ejecuta el servidor. Use `php --ini` para localizar su configuración; si tiene varias versiones, use el mismo binario que ejecuta `artisan serve`. Reinicie el servidor después de modificar el archivo INI. Docker ya incluye estos valores en `.docker/php.ini`.
+
 También puede iniciar servidor, Vite y el listener de cola con:
 
 ```bash

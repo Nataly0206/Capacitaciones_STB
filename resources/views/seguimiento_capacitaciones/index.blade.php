@@ -17,7 +17,7 @@
         </div>
     </x-slot>
 
-    <div class="py-8 esf-seguimiento-page">
+    <div class="py-4 esf-seguimiento-page esf-tracking-compact">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             @if(session('success'))
@@ -32,62 +32,22 @@
                 </div>
             @endif
 
-            <div class="esf-seguimiento-kpi-grid">
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-slate">
-                    <div class="text-sm font-semibold uppercase tracking-wide">Total registros</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalRegistros }}</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-blue">
-                    <div class="text-sm font-semibold uppercase tracking-wide">En proceso</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalEnProceso }}</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-green">
-                    <div class="text-sm font-semibold uppercase tracking-wide">Aprobadas</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalAprobadas }}</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-red">
-                    <div class="text-sm font-semibold uppercase tracking-wide">Reprobadas</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalReprobadas }}</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-amber">
-                    <div class="text-sm font-semibold uppercase tracking-wide">Pendientes</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalPendientes }}</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-amber">
-                    <div class="text-sm font-semibold uppercase tracking-wide">Vencidas</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalVencidas }}</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-amber">
-                    <div class="text-sm font-semibold uppercase tracking-wide">Próximas a vencer</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalPorVencer }}</div>
-                    <div class="text-xs mt-1">Dentro de 30 días</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-purple">
-                    <div class="text-sm font-semibold uppercase tracking-wide">Pendientes revisión</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalPendientesRevision }}</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-blue">
-                    <div class="text-sm font-semibold uppercase tracking-wide">Han continuado</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalConAvance }}</div>
-                </div>
-
-                <div class="esf-seguimiento-kpi esf-seguimiento-kpi-slate">
-                    <div class="text-sm font-semibold uppercase tracking-wide">No han continuado</div>
-                    <div class="mt-2 text-3xl font-bold">{{ $totalSinAvance }}</div>
-                </div>
-            </div>
+            <dl class="esf-tracking-summary" aria-label="Resumen de seguimiento">
+                <div class="esf-tracking-stat-slate"><dt>Registros</dt><dd>{{ $totalRegistros }}</dd></div>
+                <div class="esf-tracking-stat-blue"><dt>En proceso</dt><dd>{{ $totalEnProceso }}</dd></div>
+                <div class="esf-tracking-stat-green"><dt>Aprobadas</dt><dd>{{ $totalAprobadas }}</dd></div>
+                <div class="esf-tracking-stat-red"><dt>Reprobadas</dt><dd>{{ $totalReprobadas }}</dd></div>
+                <div class="esf-tracking-stat-amber"><dt>Pendientes</dt><dd>{{ $totalPendientes }}</dd></div>
+                <div class="esf-tracking-stat-red"><dt>Vencidas</dt><dd>{{ $totalVencidas }}</dd></div>
+                <div class="esf-tracking-stat-amber"><dt>Por vencer · 30 días</dt><dd>{{ $totalPorVencer }}</dd></div>
+                <div class="esf-tracking-stat-purple"><dt>Por revisar</dt><dd>{{ $totalPendientesRevision }}</dd></div>
+                <div class="esf-tracking-stat-blue"><dt>Con avance</dt><dd>{{ $totalConAvance }}</dd></div>
+                <div class="esf-tracking-stat-slate"><dt>Sin avance</dt><dd>{{ $totalSinAvance }}</dd></div>
+            </dl>
 
             <form method="GET" action="{{ route('seguimiento_capacitaciones.index') }}"
-                  class="esf-seguimiento-panel p-5 sm:p-6">
-                <div class="esf-seguimiento-filter-grid">
+                  class="esf-tracking-filters">
+                <div class="esf-tracking-primary-filters">
                     <div>
                         <label class="block mb-1 text-sm font-medium">Buscar</label>
                         <input
@@ -98,7 +58,6 @@
                             class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                         >
                     </div>
-
                     <div>
                         <label class="block mb-1 text-sm font-medium">Capacitación</label>
                         <select name="id_capacitacion" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
@@ -110,34 +69,6 @@
                             @endforeach
                         </select>
                     </div>
-
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Departamento</label>
-                        <select name="id_departamento" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
-                            <option value="">Todos</option>
-                            @foreach($departamentos as $departamento)
-                                <option value="{{ $departamento->id_departamento }}" {{ (string) $idDepartamento === (string) $departamento->id_departamento ? 'selected' : '' }}>
-                                    {{ $departamento->departamento }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Puesto</label>
-                        <select name="id_puesto_trabajo_matriz" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
-                            <option value="">Todos</option>
-                            @foreach($puestos as $puesto)
-                                <option value="{{ $puesto->id_puesto_trabajo_matriz }}" {{ (string) $idPuestoTrabajoMatriz === (string) $puesto->id_puesto_trabajo_matriz ? 'selected' : '' }}>
-                                    {{ $puesto->puesto_trabajo_matriz }}
-                                    @if($puesto->departamento)
-                                        - {{ $puesto->departamento->departamento }}
-                                    @endif
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
                     <div>
                         <label class="block mb-1 text-sm font-medium">Estado</label>
                         <select name="estado" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
@@ -161,7 +92,49 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="esf-tracking-filter-actions">
+                        <button type="submit"
+                                class="esf-btn esf-btn-primary ">
+                            Filtrar
+                        </button>
 
+                        <a href="{{ route('seguimiento_capacitaciones.index') }}"
+                        class="esf-btn esf-btn-soft  text-center">
+                            Limpiar
+                        </a>
+                    </div>
+                </div>
+                @php
+                    $filtrosAdicionales = collect([$idDepartamento, $idPuestoTrabajoMatriz, $seguimiento, $vencimiento, $fechaDesde, $fechaHasta])->filter(fn ($valor) => filled($valor))->count();
+                @endphp
+                <details class="esf-tracking-more-filters" @if($filtrosAdicionales) open @endif>
+                    <summary>Más filtros @if($filtrosAdicionales)<span>· {{ $filtrosAdicionales }} activos</span>@endif</summary>
+                    <div class="esf-tracking-advanced-filters">
+                    <div>
+                        <label class="block mb-1 text-sm font-medium">Departamento</label>
+                        <select name="id_departamento" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+                            <option value="">Todos</option>
+                            @foreach($departamentos as $departamento)
+                                <option value="{{ $departamento->id_departamento }}" {{ (string) $idDepartamento === (string) $departamento->id_departamento ? 'selected' : '' }}>
+                                    {{ $departamento->departamento }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-sm font-medium">Puesto</label>
+                        <select name="id_puesto_trabajo_matriz" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+                            <option value="">Todos</option>
+                            @foreach($puestos as $puesto)
+                                <option value="{{ $puesto->id_puesto_trabajo_matriz }}" {{ (string) $idPuestoTrabajoMatriz === (string) $puesto->id_puesto_trabajo_matriz ? 'selected' : '' }}>
+                                    {{ $puesto->puesto_trabajo_matriz }}
+                                    @if($puesto->departamento)
+                                        - {{ $puesto->departamento->departamento }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div>
                         <label class="block mb-1 text-sm font-medium">Seguimiento</label>
                         <select name="seguimiento" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
@@ -170,7 +143,6 @@
                             <option value="sin_avance" {{ $seguimiento === 'sin_avance' ? 'selected' : '' }}>No han continuado</option>
                         </select>
                     </div>
-
                     <div>
                         <label class="block mb-1 text-sm font-medium">Vencimiento</label>
                         <select name="vencimiento" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
@@ -180,7 +152,6 @@
                             <option value="sin_fecha" {{ $vencimiento === 'sin_fecha' ? 'selected' : '' }}>Sin fecha de vencimiento</option>
                         </select>
                     </div>
-
                     <div>
                         <label class="block mb-1 text-sm font-medium">Fecha asignación desde</label>
                         <input
@@ -190,7 +161,6 @@
                             class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                         >
                     </div>
-
                     <div>
                         <label class="block mb-1 text-sm font-black text-slate-700 dark:text-slate-200">
                             Fecha asignación hasta
@@ -203,25 +173,17 @@
                             class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                         >
                     </div>
-
-                    <div class="lg:col-start-4 flex items-end justify-end gap-3">
-                        <button type="submit"
-                                class="esf-btn esf-btn-primary min-w-[110px]">
-                            Filtrar
-                        </button>
-
-                        <a href="{{ route('seguimiento_capacitaciones.index') }}"
-                        class="esf-btn esf-btn-soft min-w-[110px] text-center">
-                            Limpiar
-                        </a>
                     </div>
-
-                </div>
+                </details>
             </form>
 
-            <div class="esf-seguimiento-table-card esf-admin-sheet-card">
-                <div class="esf-seguimiento-table-scroll">
-                    <table class="esf-seguimiento-table-modern">
+            <div class="esf-seguimiento-table-card esf-admin-sheet-card" x-data="{ todasLasColumnas: false }">
+                <div class="esf-tracking-table-toolbar">
+                    <span><strong>{{ $seguimientos->total() }}</strong> registros encontrados</span>
+                    <label><input type="checkbox" x-model="todasLasColumnas"> Ver todas las columnas</label>
+                </div>
+                <div class="esf-seguimiento-table-scroll esf-no-sticky-fields">
+                    <table class="esf-seguimiento-table-modern esf-tracking-table" :class="{ 'esf-tracking-table-expanded': todasLasColumnas }">
                         <thead>
                             <tr class="bg-slate-50 text-[11px] uppercase tracking-[0.14em] text-slate-500 dark:bg-slate-900/80 dark:text-slate-300">
                                 <th class="px-4 py-4 text-left font-black">Empleado</th>
@@ -289,8 +251,8 @@
 
                                 <tr class="border-b border-slate-100 bg-white text-sm text-slate-700 transition hover:bg-blue-50/40 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-900">
                                     <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3 min-w-[220px]">
-                                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-sm font-black uppercase text-blue-700 ring-1 ring-blue-100 dark:bg-blue-900/40 dark:text-blue-100 dark:ring-blue-700/60">
+                                        <div class="flex items-center gap-2 min-w-[180px]">
+                                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-sm font-black uppercase text-blue-700 ring-1 ring-blue-100 dark:bg-blue-900/40 dark:text-blue-100 dark:ring-blue-700/60">
                                                 {{ $inicialesEmpleadoTabla }}
                                             </div>
 
@@ -300,7 +262,7 @@
                                                 </div>
 
                                                 <div class="text-xs font-semibold text-slate-400">
-                                                    Empleado asignado
+                                                    {{ $item->empleado?->codigo_empleado ?? 'Sin código' }}
                                                 </div>
                                             </div>
                                         </div>
@@ -450,7 +412,7 @@
                                             @if($item->empleado)
                                                 <a href="{{ route('seguimiento_capacitaciones.expediente_empleado', $item->empleado->id_empleado) }}"
                                                 class="esf-action-btn esf-action-edit justify-center text-center">
-                                                    Expediente empleado
+                                                    Ver expediente
                                                 </a>
                                             @endif
                                         </div>

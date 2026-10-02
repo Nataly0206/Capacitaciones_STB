@@ -16,7 +16,7 @@
     </x-slot>
 
     <div class="py-8 esf-seguimiento-page">
-        <div class="mx-auto w-full max-w-[1800px] space-y-6 px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto w-full max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             <form method="GET"
                   action="{{ route('puestos_capacitacion.index') }}"
                   class="esf-seguimiento-panel p-5 sm:p-6">
