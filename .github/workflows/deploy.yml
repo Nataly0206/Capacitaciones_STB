@@ -1,0 +1,46 @@
+name: Deploy Laravel to IIS
+
+on:
+  push:
+    branches: [ "main" ] # Cambia "main" si tu rama principal se llama "master"
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: 1. Descargar cambios del repositorio
+        uses: actions/checkout@v4
+
+      - name: 2. Copiar variables de entorno (.env)
+        shell: powershell
+        run: |
+          # Copia el archivo .env desde una carpeta segura o la raíz del sitio si ya existe
+          if (Test-Path "C:\inetpub\wwwroot\tu-proyecto\.env") {
+            Copy-Item "C:\inetpub\wwwroot\tu-proyecto\.env" -Destination ".\.env" -Force
+          }
+
+      - name: 3. Instalar / Actualizar dependencias de PHP
+        shell: powershell
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: 4. Ejecutar migraciones de base de datos
+        shell: powershell
+        run: |
+          php artisan migrate --force
+
+      - name: 5. Optimizar y regenerar cachés de Laravel
+        shell: powershell
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan event:cache
+
+      - name: 6. Reiniciar App Pool de IIS (Opcional)
+        shell: powershell
+        run: |
+          # Cambia "NombreDeTuAppPool" por el nombre exacto de la App Pool en IIS
+          Import-Module WebAdministration
+          Restart-WebAppPool -Name "NombreDeTuAppPool"
