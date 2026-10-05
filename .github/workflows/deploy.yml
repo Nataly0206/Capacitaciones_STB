@@ -15,7 +15,6 @@ jobs:
       - name: 2. Copiar variables de entorno (.env)
         shell: powershell
         run: |
-          # Copia el archivo .env desde una carpeta segura o la raíz del sitio si ya existe
           if (Test-Path "C:\inetpub\wwwroot\tu-proyecto\.env") {
             Copy-Item "C:\inetpub\wwwroot\tu-proyecto\.env" -Destination ".\.env" -Force
           }
@@ -25,12 +24,7 @@ jobs:
         run: |
           composer install --no-dev --optimize-autoloader --no-interaction
 
-      - name: 4. Ejecutar migraciones de base de datos
-        shell: powershell
-        run: |
-          php artisan migrate --force
-
-      - name: 5. Optimizar y regenerar cachés de Laravel
+      - name: 4. Optimizar y regenerar cachés de Laravel
         shell: powershell
         run: |
           php artisan config:cache
@@ -38,9 +32,8 @@ jobs:
           php artisan view:cache
           php artisan event:cache
 
-      - name: 6. Reiniciar App Pool de IIS (Opcional)
+      - name: 5. Reiniciar App Pool de IIS (Opcional)
         shell: powershell
         run: |
-          # Cambia "NombreDeTuAppPool" por el nombre exacto de la App Pool en IIS
           Import-Module WebAdministration
           Restart-WebAppPool -Name "NombreDeTuAppPool"
