@@ -2,7 +2,7 @@ name: Deploy Laravel to IIS
 
 on:
   push:
-    branches: [ "main" ] # Cambia "main" si tu rama principal se llama "master"
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -30,10 +30,3 @@ jobs:
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
-          php artisan event:cache
-
-      - name: 5. Reiniciar App Pool de IIS (Opcional)
-        shell: powershell
-        run: |
-          Import-Module WebAdministration
-          Restart-WebAppPool -Name "NombreDeTuAppPool"
