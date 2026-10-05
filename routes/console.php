@@ -27,3 +27,24 @@ Artisan::command('avisos:procesar', function () {
 Schedule::command('avisos:procesar')
     ->dailyAt('09:00')
     ->withoutOverlapping();
+
+Artisan::command('rrhh:sincronizar-asistencias', function () {
+    $correctas = 0;
+    $pendientes = 0;
+    \App\Models\EmpleadoCapacitacion::where('estado', 'aprobada')
+        ->where('aprobado', 1)
+        ->with('capacitacion')
+        ->chunkById(100, function ($asignaciones) use (&$correctas, &$pendientes) {
+            foreach ($asignaciones as $asignacion) {
+                if (app(\App\Services\SincronizarAsistenciaRrhhService::class)->registrarAprobacion($asignacion)) {
+                    $correctas++;
+                } else {
+                    $pendientes++;
+                }
+            }
+        }, 'id_empleado_capacitacion');
+    $this->info("Asistencias registradas o existentes: {$correctas}. Pendientes: {$pendientes}.");
+    return $pendientes > 0 ? 1 : 0;
+})->purpose('Sincronizar aprobaciones con RRHH sin duplicar asistencias');
+
+Schedule::command('rrhh:sincronizar-asistencias')->everyTenMinutes()->withoutOverlapping();

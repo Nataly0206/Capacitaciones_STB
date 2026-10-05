@@ -115,10 +115,12 @@ return [
         ],
 
         /*
-         * Conexión de solo lectura al sistema de Recursos Humanos.
-         * Use un usuario de SQL Server con permiso SELECT únicamente sobre
+         * Conexión al sistema de Recursos Humanos.
+         * Use un usuario de SQL Server con permiso SELECT sobre
          * dbo.empleado, dbo.instructor, dbo.capacitacion y
-         * dbo.capacitacion_instructor. Mantenga sus credenciales en .env.
+         * dbo.capacitacion_instructor y los catálogos consultados. Para sincronizar
+         * aprobaciones necesita SELECT e INSERT en dbo.asistencia_capacitacion.
+         * Mantenga sus credenciales en .env.
          */
         'rrhh' => [
             'driver' => 'sqlsrv',

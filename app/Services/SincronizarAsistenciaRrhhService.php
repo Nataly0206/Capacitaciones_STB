@@ -7,44 +7,55 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-/**
- * Registra en rrhh.asistencia_capacitacion (solo INSERT, tabla ajena a esta
- * app) cada vez que un empleado aprueba una capacitación aquí. El usuario de
- * base de datos de esta app (capacitaciones_app) hoy solo tiene rol
- * db_datareader en la base de RRHH, así que este INSERT fallará con un error
- * de permisos hasta que alguien con acceso a esa base le otorgue INSERT (o
- * db_datawriter) sobre esta tabla. El fallo se registra en el log y nunca
- * interrumpe el flujo del empleado.
- */
 class SincronizarAsistenciaRrhhService
 {
-    public function registrarAprobacion(EmpleadoCapacitacion $miCapacitacion): void
+    public function registrarAprobacion(EmpleadoCapacitacion $miCapacitacion): bool
     {
-        $miCapacitacion->loadMissing('capacitacion.instructor');
-
-        $idCapacitacionInstructor = $miCapacitacion->capacitacion?->id_capacitacion_instructor;
-
-        if (!$idCapacitacionInstructor) {
-            Log::warning('No se sincronizó la asistencia a RRHH: la capacitación no tiene una oferta de RRHH vinculada (id_capacitacion_instructor).', [
-                'id_empleado_capacitacion' => $miCapacitacion->id_empleado_capacitacion,
-                'id_capacitacion' => $miCapacitacion->id_capacitacion,
-            ]);
-
-            return;
+        if ($miCapacitacion->estado !== 'aprobada' || (int) $miCapacitacion->aprobado !== 1) {
+            return false;
         }
 
         try {
-            DB::connection('rrhh')->table('asistencia_capacitacion')->insert([
-                'id_empleado' => $miCapacitacion->id_empleado,
-                'id_capacitacion_instructor' => $idCapacitacionInstructor,
-                'instructor_temporal' => $miCapacitacion->capacitacion?->instructor?->instructor,
-                'fecha_recibida' => now()->format('d/m/Y'),
-            ]);
+            $miCapacitacion->loadMissing('capacitacion');
+            $idOferta = $miCapacitacion->capacitacion?->id_capacitacion_instructor;
+
+            if (!$idOferta || !$miCapacitacion->id_empleado || !$miCapacitacion->fecha_finalizacion) {
+                Log::warning('Asistencia RRHH pendiente: falta empleado, oferta vinculada o fecha de finalización.', [
+                    'id_empleado_capacitacion' => $miCapacitacion->getKey(),
+                ]);
+
+                return false;
+            }
+
+            $fechaRecibida = $miCapacitacion->fecha_finalizacion->format('d/m/Y');
+            $conexion = DB::connection('rrhh');
+            $conexion->transaction(function () use ($conexion, $miCapacitacion, $idOferta, $fechaRecibida) {
+                // En SQL Server, lockForUpdate usa UPDLOCK y HOLDLOCK para
+                // serializar la comprobación y evitar duplicados concurrentes.
+                $existe = $conexion->table('asistencia_capacitacion')
+                    ->where('id_empleado', $miCapacitacion->id_empleado)
+                    ->where('id_capacitacion_instructor', $idOferta)
+                    ->where('fecha_recibida', $fechaRecibida)
+                    ->lockForUpdate()
+                    ->first(['id_asistencia_capacitacion']);
+
+                if (!$existe) {
+                    $conexion->table('asistencia_capacitacion')->insert([
+                        'id_empleado' => $miCapacitacion->id_empleado,
+                        'id_capacitacion_instructor' => $idOferta,
+                        'fecha_recibida' => $fechaRecibida,
+                    ]);
+                }
+            }, 3);
+
+            return true;
         } catch (Throwable $e) {
-            Log::error('No se pudo registrar la asistencia en RRHH (asistencia_capacitacion). Probablemente falta el permiso INSERT para capacitaciones_app en db_rrhh_stb.', [
-                'id_empleado_capacitacion' => $miCapacitacion->id_empleado_capacitacion,
+            Log::error('Asistencia RRHH pendiente: no se pudo registrar la aprobación.', [
+                'id_empleado_capacitacion' => $miCapacitacion->getKey(),
                 'error' => $e->getMessage(),
             ]);
+
+            return false;
         }
     }
 }

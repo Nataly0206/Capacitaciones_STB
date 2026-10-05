@@ -151,7 +151,9 @@ class ResumenCapacitacionEmpleadoService
         } elseif ($todosCompletados && $totalModulos > 0) {
             $miCapacitacion->estado = 'aprobada';
             $miCapacitacion->aprobado = 1;
-            $miCapacitacion->fecha_finalizacion = now();
+            $miCapacitacion->fecha_finalizacion = $estadoAnterior === 'aprobada'
+                ? ($fechaFinalizacionAnterior ?? now())
+                : now();
         } elseif ($hayAvance) {
             $miCapacitacion->estado = 'en_proceso';
             $miCapacitacion->aprobado = 0;
@@ -187,8 +189,11 @@ class ResumenCapacitacionEmpleadoService
             ]);
         }
 
-        if ($estadoAnterior !== $estadoNuevo && $estadoNuevo === 'aprobada') {
-            app(SincronizarAsistenciaRrhhService::class)->registrarAprobacion($miCapacitacion);
+        if ($estadoNuevo === 'aprobada') {
+            \Illuminate\Support\Facades\DB::connection($miCapacitacion->getConnectionName())
+                ->afterCommit(function () use ($miCapacitacion) {
+                    app(SincronizarAsistenciaRrhhService::class)->registrarAprobacion($miCapacitacion);
+                });
         }
     }
 

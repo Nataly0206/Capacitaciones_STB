@@ -566,3 +566,25 @@ Compruebe que el usuario esté activo, tenga su relación en `user_rol` y el rol
 - Blade, Alpine.js, Tailwind CSS y Vite
 - DOMPDF
 - Apache (imagen Docker)
+
+
+### Registro de aprobaciones en RR. HH.
+
+Al aprobar toda la capacitación, el sistema registra la asistencia en
+`db_rrhh_stb.dbo.asistencia_capacitacion` después de confirmar la transacción local.
+La capacitación debe estar vinculada a una oferta mediante
+`id_capacitacion_instructor`. Se insertan únicamente `id_empleado`, `id_capacitacion_instructor` y
+`fecha_recibida`, usando la fecha de finalización en formato `dd/mm/yyyy`.
+No se modifica `instructor_temporal`. Se evita repetir el mismo empleado,
+capacitación y fecha; las realizaciones de años posteriores generan otra asistencia.
+
+El usuario de la conexión `rrhh` necesita SELECT e INSERT sobre esa tabla.
+No requiere permisos UPDATE o DELETE. Los fallos se registran en el log y no
+impiden guardar la aprobación local. El scheduler reintenta cada diez minutos,
+incluyendo aprobaciones anteriores. En desarrollo mantenga activo
+`php artisan schedule:work`; en Docker de producción ya existe el servicio
+`scheduler`. Para ejecutar la sincronización manualmente:
+
+```bash
+php artisan rrhh:sincronizar-asistencias
+```
