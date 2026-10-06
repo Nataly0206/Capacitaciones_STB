@@ -33,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
         } catch (Throwable $e) {
             // Evita que comandos Artisan o entornos sin SQL Server fallen al iniciar la app.
         }
+
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 
     /**
