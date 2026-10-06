@@ -39,7 +39,7 @@ class SecurityHeaders
             . "script-src {$scriptSrc}; "
             . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.bunny.net; "
             . "font-src 'self' https://fonts.bunny.net data:; img-src 'self' data: blob: https:; "
-            . "media-src 'self' blob: https:; frame-src 'self' https:; connect-src 'self'; upgrade-insecure-requests"
+            . "media-src 'self' blob: https:; frame-src 'self' https:; connect-src 'self'; "
         );
 
         if ($request->user()) {
