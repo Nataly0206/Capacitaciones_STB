@@ -35,11 +35,11 @@ class SecurityHeaders
 
         $response->headers->set(
             'Content-Security-Policy',
-            "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; "
-            . "script-src {$scriptSrc}; "
-            . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.bunny.net; "
-            . "font-src 'self' https://fonts.bunny.net data:; img-src 'self' data: blob: https:; "
-            . "media-src 'self' blob: https:; frame-src 'self' https:; connect-src 'self'; "
+            "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; "
+            . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; "
+            . "style-src 'self' 'unsafe-inline' https:; "
+            . "font-src 'self' https: data:; "
+            . "img-src 'self' data: blob: https:;"
         );
 
         if ($request->user()) {
